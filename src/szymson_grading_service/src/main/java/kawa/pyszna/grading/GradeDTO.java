@@ -1,2 +1,10 @@
-package kawa.pyszna.grading;public record GradeDTO() {
+package kawa.pyszna.grading;
+
+import lombok.Builder;
+
+@Builder
+public record GradeDTO(
+        Integer kino,
+        Integer teatr
+) {
 }
