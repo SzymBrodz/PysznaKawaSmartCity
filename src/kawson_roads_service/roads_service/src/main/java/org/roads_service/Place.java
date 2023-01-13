@@ -75,4 +75,9 @@ public class Place {
         this.bike = calculateRoute(start, "bicycling");
         this.tram = calculateRoute(start, "transit");
     }
+
+    public Double getShortestTime(){
+        double min = Math.min(this.getWalk(), this.getBike());
+        return Math.min(min, this.getTram());
+    }
 }

@@ -21,10 +21,19 @@ public class Main {
     private static List<String> urls = new ArrayList<>();
     public static void main(String[] args) throws Exception {
         System.out.println("START");
-        for (File file : new File("Smart City - dane do zadania").listFiles()){
-            List<Place> places = DataReader.ReadData(file);
-            DataReader.computeRoutes(places);
-            DataReader.putKeyValuePlaces();
+
+        for (File file : new File("Smart City - dane do zadania").listFiles()) {
+            DataReader.putKeyValuePlaces(file.getName().split("_")[0], new ArrayList<>());
         }
+        File f = new File("Smart City - dane do zadania").listFiles()[0];
+        List<Place> places = DataReader.ReadData(f);
+        DataReader.computeRoutes(places);
+        DataReader.keyValuePlaces.replace(f.getName().split("_")[0], places);
+
+        // for(Place p : DataReader.keyValuePlaces.get("bar"))
+
+
+        DataReader.getFinalJson();
+        // System.out.println(DataReader.getRating(DataReader.keyValuePlaces.get("bar")));
     }
 }

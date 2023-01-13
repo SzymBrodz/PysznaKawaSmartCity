@@ -1,5 +1,7 @@
 package org.roads_service;
 
+import org.json.JSONObject;
+
 import javax.xml.crypto.Data;
 import java.awt.*;
 import java.io.*;
@@ -12,7 +14,6 @@ public class DataReader {
 
     // public static List<Map<String, Place>> keyValuePlaces = new ArrayList<>();
     public static Map<String, List<Place>> keyValuePlaces = new HashMap<>();
-
     static Place start = Place.builder()
             .X(54.3961355)
             .Y(18.5743202)
@@ -98,4 +99,108 @@ public class DataReader {
         keyValuePlaces.put(categoryName, places);
     }
 
+    public static JSONObject getFinalJson(){
+        List<Place> p = new ArrayList<>();
+        Map<String, List<Place>> m = new HashMap<>();
+
+        p.addAll(keyValuePlaces.get("apteka"));
+        p.addAll(keyValuePlaces.get("dentysta"));
+        p.addAll(keyValuePlaces.get("lekarz"));
+        p.addAll(keyValuePlaces.get("ortodonta"));
+        m.put("zdrowie", p);
+
+        p = new ArrayList<>();
+        p.addAll(keyValuePlaces.get("bank"));
+        p.addAll(keyValuePlaces.get("biuro"));
+        p.addAll(keyValuePlaces.get("drukarnia"));
+        p.addAll(keyValuePlaces.get("office"));
+        m.put("biurowosc", p);
+
+        p = new ArrayList<>();
+        p.addAll(keyValuePlaces.get("atrakcje"));
+        p.addAll(keyValuePlaces.get("bar"));
+        p.addAll(keyValuePlaces.get("impreza"));
+        p.addAll(keyValuePlaces.get("las"));
+        p.addAll(keyValuePlaces.get("muzeum"));
+        p.addAll(keyValuePlaces.get("park"));
+        p.addAll(keyValuePlaces.get("plaza"));
+        m.put("atrakcje", p);
+
+        p = new ArrayList<>();
+        p.addAll(keyValuePlaces.get("fastfood"));
+        p.addAll(keyValuePlaces.get("kawiarnia"));
+        p.addAll(keyValuePlaces.get("cukiernia"));
+        p.addAll(keyValuePlaces.get("piekarnia"));
+        p.addAll(keyValuePlaces.get("piekarnia"));
+        p.addAll(keyValuePlaces.get("restauracje"));
+        m.put("jedzenie", p);
+
+        p = new ArrayList<>();
+        p.addAll(keyValuePlaces.get("monopolowy"));
+        p.addAll(keyValuePlaces.get("shopping mall"));
+        p.addAll(keyValuePlaces.get("sklep spozywczy"));
+        p.addAll(keyValuePlaces.get("sklepAGD"));
+        p.addAll(keyValuePlaces.get("piekarnia"));
+        m.put("sklepy", p);
+
+        p = new ArrayList<>();
+        p.addAll(keyValuePlaces.get("fotograf"));
+        p.addAll(keyValuePlaces.get("fryzjer"));
+        p.addAll(keyValuePlaces.get("krawiec"));
+        p.addAll(keyValuePlaces.get("mechanik"));
+        p.addAll(keyValuePlaces.get("pralnia"));
+        m.put("uslugi", p);
+
+        p = new ArrayList<>();
+        p.addAll(keyValuePlaces.get("dzieci"));
+        p.addAll(keyValuePlaces.get("plac zabaw"));
+        p.addAll(keyValuePlaces.get("przedszkole"));
+        p.addAll(keyValuePlaces.get("szkola"));
+        p.addAll(keyValuePlaces.get("zlobek"));
+        m.put("dzieci", p);
+
+        p = new ArrayList<>();
+        p.addAll(keyValuePlaces.get("basen"));
+        p.addAll(keyValuePlaces.get("fitness"));
+        p.addAll(keyValuePlaces.get("silownia"));
+        m.put("sport", p);
+
+        // ratings: [ZDROWIE, BIUROWOSC, ATRAKCJE, JEDZENIE, SKLEPY, USLUGI, DZIECI, SPORT]
+        // List<Double> ratings = Arrays.asList(0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0);
+        List<Double> ratings = new ArrayList<>();
+
+        for(List<Place> places : m.values())
+            if (places.size() <= 0)
+                ratings.add(0.0);
+            else
+                ratings.add(getRating(places));
+
+        return generateJson(m, ratings);
+    }
+
+    public static JSONObject generateJson(Map<String, List<Place>> m, List<Double> ratings){
+        return new JSONObject()
+                .put("Oceny", ratings)
+                .put("Kategorie", new JSONObject(m));
+    }
+
+    /**
+     * get rating of specific category in places
+     *
+     * @param places in specific category
+     * @return
+     */
+    public static double getRating(List<Place> places){
+        List<Double> times = new ArrayList<>();
+        places.stream().sorted((o1, o2) -> o1.getShortestTime().compareTo(o2.getShortestTime()))
+                .limit(10)
+                .forEach(place -> {times.add(place.getShortestTime());});
+        double rating = 0.0;
+        double subtractor = 0.1;
+        int i = 0;
+        for ( double x : times) {
+            rating += ((15 * 60 - x ) / (15 * 60 )) * (1 - (i * subtractor)) * 5;
+        }
+        return rating / times.size();
+    }
 }
