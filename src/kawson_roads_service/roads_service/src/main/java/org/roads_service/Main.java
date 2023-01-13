@@ -15,18 +15,16 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class Main {
     private static List<String> urls = new ArrayList<>();
     public static void main(String[] args) throws Exception {
         System.out.println("START");
-        File[] f = new File("Smart City - dane do zadania").listFiles();
-        for (File file : f){
-//            List<Place> places = DataReader.ReadData(new File("Smart City - dane do zadania").listFiles()[1]);
-//            System.out.println(file.getName());
+        for (File file : new File("Smart City - dane do zadania").listFiles()){
             List<Place> places = DataReader.ReadData(file);
             DataReader.computeRoutes(places);
+            DataReader.putKeyValuePlaces();
         }
-
     }
 }

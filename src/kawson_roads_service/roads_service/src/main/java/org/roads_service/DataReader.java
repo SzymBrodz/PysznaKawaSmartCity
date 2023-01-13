@@ -3,13 +3,15 @@ package org.roads_service;
 import javax.xml.crypto.Data;
 import java.awt.*;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 import java.awt.geom.Point2D;
+import java.util.List;
 import java.util.concurrent.ForkJoinPool;
 
 public class DataReader {
+
+    // public static List<Map<String, Place>> keyValuePlaces = new ArrayList<>();
+    public static Map<String, List<Place>> keyValuePlaces = new HashMap<>();
 
     static Place start = Place.builder()
             .X(54.3961355)
@@ -91,4 +93,9 @@ public class DataReader {
         double d = R * c; // Distance in km
         return d;
     }
+
+    public static void putKeyValuePlaces(String categoryName, List<Place> places){
+        keyValuePlaces.put(categoryName, places);
+    }
+
 }
